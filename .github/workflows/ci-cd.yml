@@ -1,42 +1,86 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline for Cloud Storage Integration
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}
+      GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+      ONEDRIVE_API_KEY: ${{ secrets.ONEDRIVE_API_KEY }}
+      DROPBOX_API_KEY: ${{ secrets.DROPBOX_API_KEY }}
 
     steps:
-      - name: Set up job
-        uses: actions/setup-node@v2  # Set up any necessary environment, if required
-
-      - name: Check out code
+      # Step 1: Checkout code
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2  # Optional, for multi-platform builds if needed
-
-      - name: Install Docker Compose
+      # Step 2: Set up rclone
+      - name: Set up rclone
         run: |
-          sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Verify installation
+          curl https://rclone.org/install.sh | sudo bash
+          sudo apt-get install rclone
+          rclone version
 
-      - name: Build and Test with Docker Compose
+      # Step 3: Configure rclone remotes
+      - name: Configure rclone remotes for Google Drive, OneDrive, and Dropbox
         run: |
-          docker-compose -f docker-compose.yml build  # Build your Docker images
-          docker-compose -f docker-compose.yml up --abort-on-container-exit  # Run the containers
+          # Create configuration file for Google Drive
+          echo "[gdrive]" > ~/.config/rclone/rclone.conf
+          echo "type = drive" >> ~/.config/rclone/rclone.conf
+          echo "client_id = ${GOOGLE_DRIVE_API_KEY}" >> ~/.config/rclone/rclone.conf
+          echo "client_secret = ${GOOGLE_DRIVE_FOLDER_ID}" >> ~/.config/rclone/rclone.conf
+          echo "scope = drive" >> ~/.config/rclone/rclone.conf
+          echo "token = ${GOOGLE_DRIVE_API_KEY}" >> ~/.config/rclone/rclone.conf
+
+          # Create configuration for OneDrive
+          echo "[onedrive]" >> ~/.config/rclone/rclone.conf
+          echo "type = onedrive" >> ~/.config/rclone/rclone.conf
+          echo "token = ${ONEDRIVE_API_KEY}" >> ~/.config/rclone/rclone.conf
+
+          # Create configuration for Dropbox
+          echo "[dropbox]" >> ~/.config/rclone/rclone.conf
+          echo "type = dropbox" >> ~/.config/rclone/rclone.conf
+          echo "token = ${DROPBOX_API_KEY}" >> ~/.config/rclone/rclone.conf
+
+      # Step 4: Run tests (Example test command here)
+      - name: Run tests
+        run: |
+          # Run your tests here
+          echo "Running tests..."
+
+      # Step 5: Upload test results or other files to Google Drive
+      - name: Upload to Google Drive
+        run: |
+          rclone copy /path/to/test/results gdrive:/your-folder-path
+
+      # Step 6: Upload test results or other files to OneDrive
+      - name: Upload to OneDrive
+        run: |
+          rclone copy /path/to/test/results onedrive:/your-folder-path
+
+      # Step 7: Upload test results or other files to Dropbox
+      - name: Upload to Dropbox
+        run: |
+          rclone copy /path/to/test/results dropbox:/your-folder-path
 
   publish-artifact:
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
-      - name: Upload to Google Drive (example)
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Upload artifact to cloud storage
         run: |
-          # Example upload to Google Drive (can use APIs for other storage systems)
-          gdrive upload --parent folder_id ./out/MyApp.zip
-        env:
-          GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}
+          # Example of uploading build artifacts to Google Drive, OneDrive, or Dropbox
+          rclone copy /path/to/build/output gdrive:/path/to/store/builds/
+          rclone copy /path/to/build/output onedrive:/path/to/store/builds/
+          rclone copy /path/to/build/output dropbox:/path/to/store/builds/
