@@ -1,21 +1,18 @@
-# Use .NET SDK image
+# Use the SDK image to build the app
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-
 WORKDIR /app
 
 # Copy project file and restore dependencies
 COPY *.csproj ./
 RUN dotnet restore
 
-# Copy remaining files
+# Copy the rest of the app and publish it
 COPY . ./
+RUN dotnet publish -c Release -r linux-x64 --self-contained -o /out
 
-# Publish the app for ARM (Raspberry Pi) architecture
-RUN dotnet publish -c Release -r linux-arm --self-contained -o /out
-
-# Final stage to create the runtime image
+# Use the runtime image to run the app
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final
 WORKDIR /app
-COPY --from=build /out ./ 
+COPY --from=build /out ./
 
 ENTRYPOINT ["dotnet", "MyApp.dll"]

@@ -5,16 +5,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - ./out:/out
+    container_name: group10_project_build
+    image: group10_project_build
+    networks:
+      - default
+    # The command here is optional. It's just to ensure that the container runs the app once built
+    command: ["dotnet", "MyApp.dll"]
 
   test:
-    image: mcr.microsoft.com/dotnet/aspnet:6.0
+    image: mcr.microsoft.com/dotnet/sdk:6.0  # Use SDK for testing
+    container_name: group10_project_test
     volumes:
-      - ./out:/app
-    command: dotnet test /app/MyApp.Tests.dll
-    depends_on:
-      - build
+      - .:/app  # Mount the current directory to /app in the container
+    command: dotnet test /app/MyApp.csproj  # Specify the full path to the .csproj file
+    networks:
+      - default
 
 networks:
   default:
