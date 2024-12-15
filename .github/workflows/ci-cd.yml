@@ -14,6 +14,7 @@ jobs:
     env:
       GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}
       GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+      GOOGLE_DRIVE_TOKEN: ${{ secrets.GOOGLE_DRIVE_TOKEN }}
       ONEDRIVE_API_KEY: ${{ secrets.ONEDRIVE_API_KEY }}
       DROPBOX_API_KEY: ${{ secrets.DROPBOX_API_KEY }}
 
@@ -32,20 +33,20 @@ jobs:
       # Step 3: Configure rclone remotes
       - name: Configure rclone remotes for Google Drive, OneDrive, and Dropbox
         run: |
-          # Create configuration file for Google Drive
+          # Google Drive Configuration
           echo "[gdrive]" > ~/.config/rclone/rclone.conf
           echo "type = drive" >> ~/.config/rclone/rclone.conf
           echo "client_id = ${GOOGLE_DRIVE_API_KEY}" >> ~/.config/rclone/rclone.conf
           echo "client_secret = ${GOOGLE_DRIVE_FOLDER_ID}" >> ~/.config/rclone/rclone.conf
           echo "scope = drive" >> ~/.config/rclone/rclone.conf
-          echo "token = ${GOOGLE_DRIVE_API_KEY}" >> ~/.config/rclone/rclone.conf
+          echo "token = ${GOOGLE_DRIVE_TOKEN}" >> ~/.config/rclone/rclone.conf
 
-          # Create configuration for OneDrive
+          # OneDrive Configuration
           echo "[onedrive]" >> ~/.config/rclone/rclone.conf
           echo "type = onedrive" >> ~/.config/rclone/rclone.conf
           echo "token = ${ONEDRIVE_API_KEY}" >> ~/.config/rclone/rclone.conf
 
-          # Create configuration for Dropbox
+          # Dropbox Configuration
           echo "[dropbox]" >> ~/.config/rclone/rclone.conf
           echo "type = dropbox" >> ~/.config/rclone/rclone.conf
           echo "token = ${DROPBOX_API_KEY}" >> ~/.config/rclone/rclone.conf
