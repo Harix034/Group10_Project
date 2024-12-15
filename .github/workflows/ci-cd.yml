@@ -1,5 +1,4 @@
 name: CI/CD Pipeline for Cloud Storage Integration
-
 on:
   push:
     branches:
@@ -14,78 +13,41 @@ jobs:
     env:
       GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}
       GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
-      GOOGLE_DRIVE_TOKEN: ${{ secrets.GOOGLE_DRIVE_TOKEN }}
       ONEDRIVE_API_KEY: ${{ secrets.ONEDRIVE_API_KEY }}
       DROPBOX_API_KEY: ${{ secrets.DROPBOX_API_KEY }}
 
     steps:
-      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Step 2: Set up rclone
       - name: Set up rclone
         run: |
           curl https://rclone.org/install.sh | sudo bash
           sudo apt-get install rclone
           rclone version
 
-      # Step 3: Configure rclone remotes
-      - name: Configure rclone remotes for Google Drive, OneDrive, and Dropbox
+      - name: Configure rclone remotes
         run: |
-          # Google Drive Configuration
           echo "[gdrive]" > ~/.config/rclone/rclone.conf
           echo "type = drive" >> ~/.config/rclone/rclone.conf
           echo "client_id = ${GOOGLE_DRIVE_API_KEY}" >> ~/.config/rclone/rclone.conf
           echo "client_secret = ${GOOGLE_DRIVE_FOLDER_ID}" >> ~/.config/rclone/rclone.conf
-          echo "scope = drive" >> ~/.config/rclone/rclone.conf
-          echo "token = ${GOOGLE_DRIVE_TOKEN}" >> ~/.config/rclone/rclone.conf
-
-          # OneDrive Configuration
+          echo "token = ${GOOGLE_DRIVE_API_KEY}" >> ~/.config/rclone/rclone.conf
           echo "[onedrive]" >> ~/.config/rclone/rclone.conf
           echo "type = onedrive" >> ~/.config/rclone/rclone.conf
           echo "token = ${ONEDRIVE_API_KEY}" >> ~/.config/rclone/rclone.conf
-
-          # Dropbox Configuration
           echo "[dropbox]" >> ~/.config/rclone/rclone.conf
           echo "type = dropbox" >> ~/.config/rclone/rclone.conf
           echo "token = ${DROPBOX_API_KEY}" >> ~/.config/rclone/rclone.conf
 
-      # Step 4: Run tests (Example test command here)
-      - name: Run tests
-        run: |
-          # Run your tests here
-          echo "Running tests..."
-
-      # Step 5: Upload test results or other files to Google Drive
       - name: Upload to Google Drive
         run: |
-          rclone copy "C:/Users/rober/Downloads/Container_Grp10_Final/test_results/Dummy.txt" gdrive:/Group10_Project/
+          rclone copy /path/to/test/results gdrive:/your-folder-path
 
-
-
-      # Step 6: Upload test results or other files to OneDrive
       - name: Upload to OneDrive
         run: |
-          rclone copy C:\Users\rober\Downloads\Container_Grp10_Final\test_results\Dummy.txt onedrive:/Group10_Project/
+          rclone copy /path/to/test/results onedrive:/your-folder-path
 
-
-      # Step 7: Upload test results or other files to Dropbox
       - name: Upload to Dropbox
         run: |
-          rclone copy C:\Users\rober\Downloads\Container_Grp10_Final\test_results\Dummy.txt dropbox:/Group10_Project/
-
-
-  publish-artifact:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Upload artifact to cloud storage
-        run: |
-          # Example of uploading build artifacts to Google Drive, OneDrive, or Dropbox
-          rclone copy /path/to/build/output gdrive:/path/to/store/builds/
-          rclone copy /path/to/build/output onedrive:/path/to/store/builds/
-          rclone copy /path/to/build/output dropbox:/path/to/store/builds/
+          rclone copy /path/to/test/results dropbox:/your-folder-path
