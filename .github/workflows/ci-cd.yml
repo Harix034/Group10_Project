@@ -1,0 +1,32 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build and Test with Docker Compose
+      run: |
+        docker-compose -f docker-compose.yml build
+        docker-compose -f docker-compose.yml up --abort-on-container-exit
+
+  publish-artifact:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Upload to Google Drive (example)
+      run: |
+        # Example upload to Google Drive (can use APIs for other storage systems)
+        gdrive upload --parent folder_id ./out/MyApp.zip
+      env:
+        GOOGLE_DRIVE_API_KEY: ${{ secrets.GOOGLE_DRIVE_API_KEY }}

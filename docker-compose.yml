@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./out:/out
+
+  test:
+    image: mcr.microsoft.com/dotnet/aspnet:6.0
+    volumes:
+      - ./out:/app
+    command: dotnet test /app/MyApp.Tests.dll
+    depends_on:
+      - build
+
+networks:
+  default:
+    driver: bridge
