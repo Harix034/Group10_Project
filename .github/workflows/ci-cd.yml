@@ -60,17 +60,17 @@ jobs:
       # Step 5: Upload test results or other files to Google Drive
       - name: Upload to Google Drive
         run: |
-          rclone copy /path/to/test/results gdrive:/your-folder-path
+          rclone copy C:\Users\rober\Downloads\Container_Grp10_Final\test_results\Dummy.txt
 
       # Step 6: Upload test results or other files to OneDrive
       - name: Upload to OneDrive
         run: |
-          rclone copy /path/to/test/results onedrive:/your-folder-path
+          rclone copy C:\Users\rober\Downloads\Container_Grp10_Final\test_results\Dummy.txt
 
       # Step 7: Upload test results or other files to Dropbox
       - name: Upload to Dropbox
         run: |
-          rclone copy /path/to/test/results dropbox:/your-folder-path
+          rclone copy C:\Users\rober\Downloads\Container_Grp10_Final\test_results\Dummy.txt
 
   publish-artifact:
     needs: build-and-test
