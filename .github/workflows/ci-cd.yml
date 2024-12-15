@@ -60,7 +60,8 @@ jobs:
       # Step 5: Upload test results or other files to Google Drive
       - name: Upload to Google Drive
         run: |
-          rclone copy C:\Users\rober\Downloads\Container_Grp10_Final\test_results\Dummy.txt gdrive:/Group10_Project/
+          rclone copy "C:/Users/rober/Downloads/Container_Grp10_Final/test_results/Dummy.txt" gdrive:/Group10_Project/
+
 
 
       # Step 6: Upload test results or other files to OneDrive
