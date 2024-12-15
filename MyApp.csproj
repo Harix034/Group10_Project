@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Target the .NET 6 framework -->
+    <TargetFramework>net6.0</TargetFramework>
+
+    <!-- Define the application output type (for a console app) -->
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <!-- Add project dependencies -->
+  <ItemGroup>
+    <!-- You can add any additional dependencies here (e.g., NuGet packages) -->
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+</Project>
