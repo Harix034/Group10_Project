@@ -42,12 +42,12 @@ jobs:
 
       - name: Upload to Google Drive
         run: |
-          rclone copy /path/to/test/results gdrive:/your-folder-path
+          rclone copy /path/to/test/results gdrive:/Group10_project
 
       - name: Upload to OneDrive
         run: |
-          rclone copy /path/to/test/results onedrive:/your-folder-path
+          rclone copy /path/to/test/results onedrive:/Group10_project
 
       - name: Upload to Dropbox
         run: |
-          rclone copy /path/to/test/results dropbox:/your-folder-path
+          rclone copy /path/to/test/results dropbox:/Group10_project
